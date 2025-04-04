@@ -161,8 +161,9 @@ async function updateSlideEntity(token, updatePayload) {
 async function generateSlides(token, noOfSlides, presentation_id,data) {
   for (let i = 0; i < noOfSlides; i++) {
     const slideOrder = i;
-    console.log(`Creating slide ${i + 1} ..... `);
+    console.log(`Creating slide ${i} ..... `);
     const ppt = await createNewSlide(token, presentation_id, slideOrder);
+    
 
     await initializeWebSocket();
     
@@ -181,8 +182,8 @@ async function generateSlides(token, noOfSlides, presentation_id,data) {
     // Wait for the response from the WebSocket and store variants
     let variants = await waitForVariants();
     const pptWithVariants = variants[0];
-    for (let i = 1; i <= 4; i++) {
-      pptWithVariants.variants.push(variants[i]);
+    for (let j = 1; j <= 4; j++) {
+      pptWithVariants.variants.push(variants[j]);
     }
     variants = pptWithVariants.variants
     
