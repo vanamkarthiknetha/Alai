@@ -16,8 +16,7 @@ async function main() {
     //     return;
     // }
     // const data =  await scrapeWebpage(url)
-
-    await alai(token,scrapedData.markdown)
+    await alai(token,scrapedData)
     
 }
 

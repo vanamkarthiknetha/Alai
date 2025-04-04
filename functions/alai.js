@@ -23,15 +23,6 @@ async function initializeWebSocket() {
     });
   });
 }
-async function closeWebSocket(data) {
-  try {
-    if (ws && ws.readyState === WebSocket.OPEN) {
-      await ws.close();
-    }
-  } catch (error) {
-    console.error("Error closing WebSocket:", error);
-  }
-}
 async function waitForVariants() {
   return new Promise((resolve) => {
     const variants = [];
@@ -52,10 +43,10 @@ async function waitForVariants() {
   });
 }
 
-async function createNewPresentation(token) {
+async function createNewPresentation(token,data) {
   const url = `${process.env.ALAI_BASE_URL}/create-new-presentation`;
   const presentationId = uuidv4();
-  const presentationTitle = `Presentation ${presentationId}`;
+  const presentationTitle = data.metadata.title;
 
   const payload = {
     presentation_id: presentationId,
@@ -143,62 +134,83 @@ async function createNewSlide(token, presentation_id, slide_order) {
     throw error;
   }
 }
-async function updateSlideEntity(token, data) {
-  //   const newSlide = await createNewSlide(token,"1ce2c36a-6b78-4268-9d6e-7660dd967691",4);
-  //   console.log(newSlide)
+async function updateSlideEntity(token, updatePayload) {
+  const url = `${process.env.ALAI_BASE_URL}/update-slide-entity`;
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(updatePayload),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+  } catch (error) {
+    console.error("Error updating slide entity:", error);
+    throw error; // Rethrow the error for handling upstream
+  }
 }
 
-async function generateSlides(token, noOfSlides, presentation_id) {
+async function generateSlides(token, noOfSlides, presentation_id,data) {
   for (let i = 0; i < noOfSlides; i++) {
     const slideOrder = i;
     console.log(`Creating slide ${i + 1} ..... `);
     const ppt = await createNewSlide(token, presentation_id, slideOrder);
 
     await initializeWebSocket();
+    
     const payload = {
-      additional_instructions: "Testing", // Customize as needed
+      additional_instructions:"Generate slides based on the provided scraped markdown data. Ensure the slides are structured clearly, summarizing key points from the content. Maintain formatting, highlight important sections, and make the information visually engaging. Preserve code blocks, headers, and lists where applicable.", // Customize as needed
       auth_token: token,
       images_on_slide: [],
       layout_type: "AI_GENERATED_LAYOUT",
       presentation_id: presentation_id,
       slide_id: ppt.slides[i].id,
-      slide_specific_context: "Just testing", // Customize as needed
+      slide_specific_context: data.markdown, // Customize as needed
       update_tone_verbosity_calibration_status: false,
     };
     ws.send(JSON.stringify(payload));
     console.log(`Sent WebSocket message for slide ${slideOrder}`);
     // Wait for the response from the WebSocket and store variants
-    const variants = await waitForVariants();
+    let variants = await waitForVariants();
     const pptWithVariants = variants[0];
     for (let i = 1; i <= 4; i++) {
       pptWithVariants.variants.push(variants[i]);
     }
-    console.log(`Received variants for slide ${slideOrder}`);
+    variants = pptWithVariants.variants
+    
+    
+    console.log(`Updating variant for slide ${slideOrder}`);
+    const updatePayload = {
+      active_variant_id: variants[0].id, 
+      color_set_id: 0,
+      created_at: pptWithVariants.created_at,
+      id: variants[0].slide_id,
+      presentation_context: data.markdown,
+      presentation_id,
+      slide_context: data.markdown,
+      slide_instructions: "Generate slides based on the provided scraped markdown data. Ensure the slides are structured clearly, summarizing key points from the content. Maintain formatting, highlight important sections, and make the information visually engaging. Preserve code blocks, headers, and lists where applicable.",
+      slide_order: i,
+      slide_outline: null,
+      slide_status: "VARIANT_GENERATION_SELECTION",
+      variants: variants,
+    };
 
-    // const updatePayload = {
-    //   active_variant_id: variants[0].id, // Set the first variant as active
-    //   color_set_id: 0,
-    //   created_at: variants[0].created_at,
-    //   id: variants[0].slide_id,
-    //   presentation_context: variants[0].presentation_context,
-    //   presentation_id,
-    //   slide_context: variants[0].slide_context,
-    //   slide_instructions: variants[0].slide_instructions,
-    //   slide_order: variants[0].slide_order,
-    //   slide_outline: variants[0].slide_outline,
-    //   slide_status: variants[0].slide_status,
-    //   variants: variants, // Store all variants
-    // };
-
-    // await updateSlideEntity(token,updatePayload);
+    await updateSlideEntity(token,updatePayload);
   }
 }
 
 async function alai(token, data) {
-  const ppt = await createNewPresentation(token);
-  await generateSlides(token, 2, ppt.id);
+  const ppt = await createNewPresentation(token,data);
+  await generateSlides(token, 2, ppt.id,data);
   const sharableLink = await getSharableLink(token, ppt.id);
-//   await closeWebSocket();
   console.log("✅ Sharable Link :", sharableLink);
 }
 
