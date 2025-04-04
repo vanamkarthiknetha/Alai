@@ -9,7 +9,7 @@ async function initializeWebSocket() {
     );
 
     ws.on("open", () => {
-      console.log("WebSocket connection opened");
+    //   console.log("WebSocket connection opened");
       resolve();
     });
 
@@ -19,7 +19,7 @@ async function initializeWebSocket() {
     });
 
     ws.on("close", () => {
-      console.log("WebSocket connection closed");
+    //   console.log("WebSocket connection closed");
     });
   });
 }
@@ -30,7 +30,7 @@ async function waitForVariants() {
     const messageHandler = (data) => {
       const message = JSON.parse(data);
         variants.push(message); 
-        console.log("A variant received!");
+        // console.log("A variant received!");
 
         if (variants.length === 5) {
           ws.removeListener("message", messageHandler); 
@@ -57,6 +57,7 @@ async function createNewPresentation(token,data) {
   };
 
   try {
+    console.log("Creating presentation ....")
     const response = await fetch(url, {
       method: "POST",
       headers: {
@@ -178,8 +179,10 @@ async function generateSlides(token, noOfSlides, presentation_id,data) {
       update_tone_verbosity_calibration_status: false,
     };
     ws.send(JSON.stringify(payload));
-    console.log(`Sent WebSocket message for slide ${slideOrder}`);
+    // console.log(`Sent WebSocket message for slide ${slideOrder}`);
+
     // Wait for the response from the WebSocket and store variants
+    console.log("Creating variants for slide ",i," (May take a while)")
     let variants = await waitForVariants();
     const pptWithVariants = variants[0];
     for (let j = 1; j <= 4; j++) {
