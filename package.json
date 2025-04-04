@@ -10,6 +10,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "dotenv": "^16.4.7"
+    "@mendable/firecrawl-js": "^1.21.1",
+    "dotenv": "^16.4.7",
+    "uuid": "^11.1.0"
   }
 }
