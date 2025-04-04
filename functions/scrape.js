@@ -13,8 +13,7 @@ async function scrapeWebpage(url) {
       throw new Error(`Failed to scrape: ${scrapeResponse.error}`);
     }
 
-    console.log(scrapeResponse?.markdown);
-    return scrapeResponse?.markdown || null
+    return scrapeResponse || null
   } catch (error) {
     console.error("Error scraping webpage:", error);
     return null;

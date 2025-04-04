@@ -4,10 +4,9 @@ const scrapeWebpage = require("./functions/scrape");
 
 const { scrapedData } = require("./data");
 const alai = require("./functions/alai");
-const token = process.env.ALAI_TOKEN
 
 
-const url = "https://karthikvanam.vercel.app/";  
+const url = "https://en.wikipedia.org/wiki/Wiki";  
 
 async function main() {
     console.log("Logging in....")
@@ -16,8 +15,9 @@ async function main() {
         console.error("Failed to authenticate with Alai.");
         return;
     }
-    // const data =  await scrapeWebpage(url)
-    await alai(token,scrapedData)
+    console.log(`Scraping ${url} ....`)
+    const data =  await scrapeWebpage(url)
+    await alai(token,data)
     
 }
 
