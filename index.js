@@ -17,8 +17,7 @@ async function main() {
     // }
     // const data =  await scrapeWebpage(url)
 
-    const sharableLink = await alai(token,scrapedData.markdown)
-    console.log("✅ Sharable Link :",sharableLink)
+    await alai(token,scrapedData.markdown)
     
 }
 
