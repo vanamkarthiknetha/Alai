@@ -37,4 +37,8 @@ node index.js
 - Node.js
 - NPM
 
+## Output
 
+Below is an example output after running the script:
+
+![Output Screenshot](output.png)
