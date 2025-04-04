@@ -306,7 +306,79 @@ const scrapedData = {
   }
 }
 
-
+const newSlideppt={
+  id: 'fbdd9a7c-c133-4599-8c99-6e93fa4e0e25',
+  presentation_title: 'Presentation fbdd9a7c-c133-4599-8c99-6e93fa4e0e25',
+  slides: [
+    {
+      id: '1e6a451d-ed1f-4fdd-b052-aefbf443b8ae',
+      presentation_id: 'fbdd9a7c-c133-4599-8c99-6e93fa4e0e25',
+      slide_order: 0,
+      color_set_id: 0,
+      variants: [],
+      created_at: '2025-04-04T14:52:28.488057+00:00',
+      active_variant_id: null,
+      slide_outline: null,
+      slide_context: null,
+      slide_instructions: null,
+      presentation_context: null,
+      slide_status: 'DEFAULT'
+    }
+  ],
+  created_at: '2025-04-04T14:52:26.724687+00:00',
+  has_calibrated_tone_and_verbosity: false,
+  theme_id: 'a6bff6e5-3afc-4336-830b-fbc710081012',
+  default_color_set_id: 0
+}
+const pptWithVariants={
+  id: '4d87b2a1-f588-44dd-8180-5cdcd2aa8951',
+  presentation_id: 'af8a1b75-38ad-4750-a8da-0f6a81056556',
+  slide_order: 0,
+  color_set_id: 0,
+  variants: [
+    {
+      id: 'ccdfad30-b064-4cec-9434-2d4a606d147a',
+      slide_id: '4d87b2a1-f588-44dd-8180-5cdcd2aa8951',
+      element_slide: [Object],
+      is_discarded: false,
+      created_at: '2025-04-04T15:15:44.750477+00:00'
+    },
+    {
+      id: 'fbef8325-dcc0-40e3-91db-75676a3d1689',
+      slide_id: '4d87b2a1-f588-44dd-8180-5cdcd2aa8951',
+      element_slide: [Object],
+      is_discarded: false,
+      created_at: '2025-04-04T15:15:45.43517+00:00'
+    },
+    {
+      id: 'd67a85ec-cb7e-428e-8326-5850b3ce33b2',
+      slide_id: '4d87b2a1-f588-44dd-8180-5cdcd2aa8951',
+      element_slide: [Object],
+      is_discarded: false,
+      created_at: '2025-04-04T15:15:45.771619+00:00'
+    },
+    {
+      id: '082fe9ea-62fe-4bc9-9213-d7364f8f86fc',
+      slide_id: '4d87b2a1-f588-44dd-8180-5cdcd2aa8951',
+      element_slide: [Object],
+      is_discarded: false,
+      created_at: '2025-04-04T15:15:45.962602+00:00',
+      element_slide: [Object],
+      is_discarded: false,
+      created_at: '2025-04-04T15:15:45.962602+00:00',
+      is_discarded: false,
+      created_at: '2025-04-04T15:15:45.962602+00:00',
+      created_at: '2025-04-04T15:15:45.962602+00:00'
+    }
+  ],
+  created_at: '2025-04-04T15:15:33.059057+00:00',
+  active_variant_id: null,
+  slide_outline: null,
+  slide_context: 'Just testing',
+  slide_instructions: 'Testing',
+  presentation_context: 'Since this appears to be a test slide with minimal content and instructions only stating "Testing," there is no additional context from the presentation that would be relevant to include. The user appears to be simply testing the slide creation functionality.',
+  slide_status: 'VARIANT_GENERATION_SELECTION'
+}
 
 module.exports= {
   scrapedData

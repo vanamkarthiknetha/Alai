@@ -1,5 +1,56 @@
 const { v4: uuidv4 } = require("uuid");
-const { initializeWebSocket, closeWebSocket } = require("./realtime");
+const WebSocket = require("ws");
+
+let ws; // Declare the WebSocket variable
+async function initializeWebSocket() {
+  return new Promise((resolve, reject) => {
+    ws = new WebSocket(
+      "wss://alai-standalone-backend.getalai.com/ws/create-and-stream-slide-variants"
+    );
+
+    ws.on("open", () => {
+      console.log("WebSocket connection opened");
+      resolve();
+    });
+
+    ws.on("error", (error) => {
+      console.error("WebSocket error:", error);
+      reject(error);
+    });
+
+    ws.on("close", () => {
+      console.log("WebSocket connection closed");
+    });
+  });
+}
+async function closeWebSocket(data) {
+  try {
+    if (ws && ws.readyState === WebSocket.OPEN) {
+      await ws.close();
+    }
+  } catch (error) {
+    console.error("Error closing WebSocket:", error);
+  }
+}
+async function waitForVariants() {
+  return new Promise((resolve) => {
+    const variants = [];
+
+    const messageHandler = (data) => {
+      const message = JSON.parse(data);
+        variants.push(message); 
+        console.log("A variant received!");
+
+        if (variants.length === 5) {
+          ws.removeListener("message", messageHandler); 
+          resolve(variants);
+        }
+    };
+
+    // Add the message listener
+    ws.on("message", messageHandler);
+  });
+}
 
 async function createNewPresentation(token) {
   const url = `${process.env.ALAI_BASE_URL}/create-new-presentation`;
@@ -35,7 +86,6 @@ async function createNewPresentation(token) {
     throw error;
   }
 }
-
 async function getSharableLink(token, presentationId) {
   const url = `${process.env.ALAI_BASE_URL}/upsert-presentation-share`;
   const payload = {
@@ -98,34 +148,58 @@ async function updateSlideEntity(token, data) {
   //   console.log(newSlide)
 }
 
-async function generateSlides(token,noOfSlides,presentation_id) {
+async function generateSlides(token, noOfSlides, presentation_id) {
+  for (let i = 0; i < noOfSlides; i++) {
+    const slideOrder = i;
+    console.log(`Creating slide ${i + 1} ..... `);
+    const ppt = await createNewSlide(token, presentation_id, slideOrder);
 
-
-      for (let i = 0; i < noOfSlides; i++) {
-        const slideOrder = i;
-        const newSlide = await createNewSlide(token,presentation_id, slideOrder);
-        console.log(`Slide${i+1} created`,newSlide)
-
-        // await updateSlideEntity(token, {
-        //     presentation_id,
-        //     slide_id: newSlide.slide_id, 
-        //     slide_specific_context: "Your context here" 
-        // });
+    await initializeWebSocket();
+    const payload = {
+      additional_instructions: "Testing", // Customize as needed
+      auth_token: token,
+      images_on_slide: [],
+      layout_type: "AI_GENERATED_LAYOUT",
+      presentation_id: presentation_id,
+      slide_id: ppt.slides[i].id,
+      slide_specific_context: "Just testing", // Customize as needed
+      update_tone_verbosity_calibration_status: false,
+    };
+    ws.send(JSON.stringify(payload));
+    console.log(`Sent WebSocket message for slide ${slideOrder}`);
+    // Wait for the response from the WebSocket and store variants
+    const variants = await waitForVariants();
+    const pptWithVariants = variants[0];
+    for (let i = 1; i <= 4; i++) {
+      pptWithVariants.variants.push(variants[i]);
     }
+    console.log(`Received variants for slide ${slideOrder}`);
 
-    
+    // const updatePayload = {
+    //   active_variant_id: variants[0].id, // Set the first variant as active
+    //   color_set_id: 0,
+    //   created_at: variants[0].created_at,
+    //   id: variants[0].slide_id,
+    //   presentation_context: variants[0].presentation_context,
+    //   presentation_id,
+    //   slide_context: variants[0].slide_context,
+    //   slide_instructions: variants[0].slide_instructions,
+    //   slide_order: variants[0].slide_order,
+    //   slide_outline: variants[0].slide_outline,
+    //   slide_status: variants[0].slide_status,
+    //   variants: variants, // Store all variants
+    // };
+
+    // await updateSlideEntity(token,updatePayload);
+  }
 }
 
-
-
 async function alai(token, data) {
-  await initializeWebSocket();
   const ppt = await createNewPresentation(token);
-  
-  await generateSlides(token,2,ppt.id)
+  await generateSlides(token, 2, ppt.id);
   const sharableLink = await getSharableLink(token, ppt.id);
-  closeWebSocket();
-    console.log("✅ Sharable Link :",sharableLink)
+//   await closeWebSocket();
+  console.log("✅ Sharable Link :", sharableLink);
 }
 
 module.exports = alai;
