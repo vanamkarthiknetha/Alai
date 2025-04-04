@@ -42,3 +42,11 @@ node index.js
 Below is an example output after running the script:
 
 ![Output Screenshot](output.png)
+
+
+**Note:** Update the URL in `index.js` to a valid URL. The default URL is:
+
+```js
+const url = "https://en.wikipedia.org/wiki/Wiki";
+```
+Modify this to the URL of the webpage you want to scrape and generate a PPT from.
