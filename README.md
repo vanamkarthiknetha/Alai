@@ -43,6 +43,8 @@ Below is an example output after running the script:
 
 ![Output Screenshot](output.png)
 
+🔗 [View Sample Output](https://app.getalai.com/view/jneDLMZ7TYSELC862T56lQ)
+
 
 **Note:** Update the URL in `index.js` to a valid URL. The default URL is:
 
