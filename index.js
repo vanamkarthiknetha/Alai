@@ -6,7 +6,7 @@ const { scrapedData } = require("./data");
 const alai = require("./functions/alai");
 
 
-const url = "https://en.wikipedia.org/wiki/Wiki";  
+const url = "https://karthikvanam.vercel.app/";  
 
 async function main() {
     console.log("Logging in....")

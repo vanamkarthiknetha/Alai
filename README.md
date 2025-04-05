@@ -49,6 +49,6 @@ Below is an example output after running the script:
 **Note:** Update the URL in `index.js` to a valid URL. The default URL is:
 
 ```js
-const url = "https://en.wikipedia.org/wiki/Wiki";
+const url = "https://karthikvanam.vercel.app/";
 ```
 Modify this to the URL of the webpage you want to scrape and generate a PPT from.
